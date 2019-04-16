@@ -2,9 +2,10 @@ package com.example.estudandolistview;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,10 +17,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ListView listviewPessoas;
-    private FloatingActionButton fabCadastrar;
-    private List<Pessoa> pessoas;
-    private ArrayAdapter<Pessoa> arrayAdapter;
+    private ListView listviewUsuarios;
+    private List<Usuario> usuarios;
+    private ArrayAdapter<Usuario> arrayAdapter;
 
     public static final int REQUEST_CODE = 1;
 
@@ -28,31 +28,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pessoas = new ArrayList<>();
-        pessoas.add(new Pessoa("A", 30, "02145887"));
-        pessoas.add(new Pessoa("B", 40, "989898989"));
-        pessoas.add(new Pessoa("C", 60, "878787878"));
+        usuarios = new ArrayList<>();
+        usuarios.add(new Usuario("Marcel", 30, "02145887"));
+        usuarios.add(new Usuario("Rodrigo", 40, "989898989"));
+        usuarios.add(new Usuario("Evangil", 60, "878787878"));
 
-        listviewPessoas = findViewById(R.id.listviewPessoas);
-        fabCadastrar = findViewById(R.id.fabCadastrar);
+        listviewUsuarios = findViewById(R.id.listviewPessoas);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, usuarios);
 
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pessoas);
+        listviewUsuarios.setAdapter(arrayAdapter);
 
-        listviewPessoas.setAdapter(arrayAdapter);
-
-        fabCadastrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CadastrarPessoaActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
-
-        listviewPessoas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listviewUsuarios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Pessoa p = pessoas.get(position);
-                Intent intent = new Intent(MainActivity.this, AtualizarPessoaActivity.class);
+                Usuario p = usuarios.get(position);
+                Intent intent = new Intent(MainActivity.this, AtualizarUsuarioActivity.class);
                 intent.putExtra("nome", p.getNome());
                 intent.putExtra("idade", Integer.toString(p.getIdade()));
                 intent.putExtra("cpf", p.getCpf());
@@ -68,32 +58,49 @@ public class MainActivity extends AppCompatActivity {
 //                arrayAdapter.notifyDataSetChanged();
 //            }
         });
-    }
 
+        getSupportActionBar().setTitle("Usuarios");
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.menuItemCadastrar:
+                Intent i =  new Intent(MainActivity.this, CadastrarUsuarioActivity.class);
+                startActivityForResult(i, REQUEST_CODE);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.android_menu_operacoes, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == REQUEST_CODE){
-            if(resultCode == CadastrarPessoaActivity.RESULT_CODE){
-                Pessoa p = (Pessoa) data.getSerializableExtra("pessoa");
-                pessoas.add(p);
+            if(resultCode == CadastrarUsuarioActivity.RESULT_CODE){
+                Usuario p = (Usuario) data.getSerializableExtra("pessoa");
+                usuarios.add(p);
                 arrayAdapter = null;
-                arrayAdapter =  new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pessoas);
-                listviewPessoas.setAdapter(arrayAdapter);
+                arrayAdapter =  new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, usuarios);
+                listviewUsuarios.setAdapter(arrayAdapter);
             }
-            if(resultCode == AtualizarPessoaActivity.RESULT_CODE){
+            if(resultCode == AtualizarUsuarioActivity.RESULT_CODE){
                 try {
-                    Pessoa p = (Pessoa) data.getSerializableExtra("pessoa");
+                    Usuario p = (Usuario) data.getSerializableExtra("pessoa");
                     String position = (String) data.getSerializableExtra("position");
-                    pessoas.set(Integer.parseInt(position), p);
+                    usuarios.set(Integer.parseInt(position), p);
                     Toast.makeText(MainActivity.this, p.toString(), Toast.LENGTH_LONG).show();
                 }catch (RuntimeException e){
                     String position = (String) data.getSerializableExtra("position");
-                    pessoas.remove(Integer.parseInt(position));
+                    usuarios.remove(Integer.parseInt(position));
                     arrayAdapter = null;
-                    arrayAdapter =  new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pessoas);
-                    listviewPessoas.setAdapter(arrayAdapter);
+                    arrayAdapter =  new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, usuarios);
+                    listviewUsuarios.setAdapter(arrayAdapter);
                 }
             }
         }

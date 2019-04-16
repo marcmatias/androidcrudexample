@@ -2,17 +2,17 @@ package com.example.estudandolistview;
 
 import java.io.Serializable;
 
-public class Pessoa implements Serializable {
+public class Usuario implements Serializable {
 
     private Integer id;
     private String nome;
     private int idade;
     private String cpf;
 
-    public Pessoa() {
+    public Usuario() {
     }
 
-    public Pessoa(String nome, int idade, String cpf) {
+    public Usuario(String nome, int idade, String cpf) {
         this.nome = nome;
         this.idade = idade;
         this.cpf = cpf;
